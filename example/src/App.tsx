@@ -22,11 +22,13 @@ import { testHighlights as _testHighlights } from "./test-highlights";
 
 import "./style/App.css";
 
+import testPdf from './test.pdf'
+
 const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 
 interface State {
   url: string;
-  highlights: Array<IHighlight>;
+  highlights: Array<IHighlight> | any;
 }
 
 const getNextId = () => String(Math.random()).slice(2);
@@ -49,21 +51,193 @@ const HighlightPopup = ({
     </div>
   ) : null;
 
-const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
+// const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
+const PRIMARY_PDF_URL = testPdf;
 const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480";
 
 const searchParams = new URLSearchParams(document.location.search);
 
 const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 
+
+const testLights = [
+  {
+    id: "1234567878",
+    position: {
+      boundingRect: {
+        // x1: 188.623,
+        // y1: 420.803,
+        // x2: 255.729,
+        // y2: 429.978,
+        // width: 809.9999999999999,
+        // height: 1200,
+        x2: 248.623,
+        y2: 544.803,
+        x1: 335.729,
+        y1: 565.978,
+        width: 809.9999999999999,
+        height: 1200,
+        // width: 965,
+        // height: 1248
+      },
+      rects: [
+        {
+          // x1: 188.623, +60
+          // y1: 420.803, +124
+          // x2: 255.729, +80
+          // y2: 429.978, +136
+          // width: 809.9999999999999,
+          // height: 1200,
+
+          x1: 188.623,
+          y1: 420.803,
+          x2: 255.729,
+          y2: 429.978,
+
+          // x2: 248.623,
+          // y2: 544.803,
+          // x1: 335.729,
+          // y1: 565.978,
+          width: 809.9999999999999,
+          height: 1200,
+        }
+
+      ],
+      pageNumber: 1
+    },
+    content: {
+      text: "Type Checking for JavaScript",
+    },
+    comment: {
+      text: "66666666",
+      emoji: "",
+    }
+  },
+
+  {
+    id: "12345678780",
+    position: {
+      boundingRect: {
+        // 98.8813, 299.693, 513.118, 324.965
+        // 304.79,324.57,
+        x1: 98.8813,
+        y1: 299.693,
+        x2: 513.118,
+        y2: 324.965,
+        width: 809.9999999999999,
+        height: 1200,
+        // x1: 158.8813,
+        // y1: 423.693,
+        // x2: 593.118,
+        // y2: 460.965,
+        // width: 809.9999999999999,
+        // height: 1200,
+
+      },
+      rects: [
+
+
+        // x1: 98.8813, +60 
+        // y1: 299.693, +124 
+        // x2: 513.118, +80
+        // y2: 324.965, +136
+        // width: 809.9999999999999,
+        // height: 1200,
+        {
+          x1: 98.8813,
+          y1: 299.693,
+          x2: 513.118,
+          y2: 324.965,
+          width: 809.9999999999999,
+          height: 1200,
+          // x1: 158.8813,
+          // y1: 423.693,
+          // x2: 593.118,
+          // y2: 460.965,
+          // width: 809.9999999999999,
+          // height: 1200,
+
+        }
+
+      ],
+      pageNumber: 1
+    },
+    content: {
+      text: "Type Checking for JavaScript",
+    },
+    comment: {
+      text: "8888888888",
+      emoji: "",
+    }
+  },
+
+  {
+    id: "12345678789",
+    position: {
+      boundingRect: {
+        // 301.765, 253.43, 434.918, 262.496
+
+        // x1:  301.765,
+        // y1: 253.43,
+        // x2: 513.118,
+        // y2: 324.965,
+        // width: 809.9999999999999,
+        // height: 1200,
+
+        x1: 361.765,
+        y1: 377.43,
+        x2: 593.118,
+        y2: 460.965,
+        width: 809.9999999999999,
+        height: 1200,
+
+
+
+
+      },
+      rects: [
+        {
+          //   x1: 98.8813, +60 
+          // y1: 299.693, +124 
+          // x2: 513.118, +80
+          // y2: 324.965, +136
+          // width: 809.9999999999999,
+          // height: 1200,
+          x1: 361.765,
+          y1: 377.43,
+          x2: 593.118,
+          y2: 460.965,
+          width: 809.9999999999999,
+          height: 1200,
+
+
+        }
+
+      ],
+      pageNumber: 1
+    },
+    content: {
+      text: "Type Checking for JavaScript",
+    },
+    comment: {
+      text: "999999999",
+      emoji: "",
+    }
+  }
+]
 // biome-ignore lint/complexity/noBannedTypes: Not sure what to use instead of {}
 class App extends Component<{}, State> {
   state = {
     url: initialUrl,
-    highlights: testHighlights[initialUrl]
-      ? [...testHighlights[initialUrl]]
+    // highlights: testHighlights[initialUrl]
+    //   ? [...testHighlights[initialUrl]]
+    //   : [],
+    highlights: testLights
+      ? testLights
       : [],
   };
+
+
 
   resetHighlights = () => {
     this.setState({
@@ -81,7 +255,7 @@ class App extends Component<{}, State> {
     });
   };
 
-  scrollViewerTo = (highlight: IHighlight) => {};
+  scrollViewerTo = (highlight: IHighlight) => { };
 
   scrollToHighlightFromHash = () => {
     const highlight = this.getHighlightById(parseIdFromHash());
@@ -110,6 +284,7 @@ class App extends Component<{}, State> {
 
     console.log("Saving highlight", highlight);
 
+    console.log([{ ...highlight, id: getNextId() }, ...highlights], 'uouououou')
     this.setState({
       highlights: [{ ...highlight, id: getNextId() }, ...highlights],
     });
@@ -132,11 +307,11 @@ class App extends Component<{}, State> {
         } = h;
         return id === highlightId
           ? {
-              id,
-              position: { ...originalPosition, ...position },
-              content: { ...originalContent, ...content },
-              ...rest,
-            }
+            id,
+            position: { ...originalPosition, ...position },
+            content: { ...originalContent, ...content },
+            ...rest,
+          }
           : h;
       }),
     });
@@ -221,7 +396,7 @@ class App extends Component<{}, State> {
                     <Popup
                       popupContent={<HighlightPopup {...highlight} />}
                       onMouseOver={(popupContent) =>
-                        setTip(highlight, (highlight) => popupContent)
+                        setTip(highlight, (highlight) => (popupContent))
                       }
                       onMouseOut={hideTip}
                       key={index}

@@ -1,5 +1,9 @@
 import React from "react";
 import type { IHighlight } from "./react-pdf-highlighter";
+import { Card } from 'antd';
+import {
+  DeleteOutlined
+} from '@ant-design/icons';
 
 interface Props {
   highlights: Array<IHighlight>;
@@ -18,9 +22,14 @@ export function Sidebar({
   toggleDocument,
   resetHighlights,
 }: Props) {
+  const delhighlight = (event: any, highlight: any) => {
+    console.log(highlight, '444444')
+    event.stopPropagation();
+
+  }
   return (
     <div className="sidebar" style={{ width: "25vw" }}>
-      <div className="description" style={{ padding: "1rem" }}>
+      {/* <div className="description" style={{ padding: "1rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>
           react-pdf-highlighter {APP_VERSION}
         </h2>
@@ -37,6 +46,9 @@ export function Sidebar({
             drag.
           </small>
         </p>
+      </div> */}
+      <div className="comment-head">
+        <span>批注列表 <span className="count">（{(highlights.length || 0) + '条'}）</span></span>
       </div>
 
       <ul className="sidebar__highlights">
@@ -49,25 +61,31 @@ export function Sidebar({
               updateHash(highlight);
             }}
           >
-            <div>
-              <strong>{highlight.comment.text}</strong>
-              {highlight.content.text ? (
-                <blockquote style={{ marginTop: "0.5rem" }}>
-                  {`${highlight.content.text.slice(0, 90).trim()}…`}
-                </blockquote>
-              ) : null}
-              {highlight.content.image ? (
-                <div
-                  className="highlight__image"
-                  style={{ marginTop: "0.5rem" }}
-                >
-                  <img src={highlight.content.image} alt={"Screenshot"} />
+            <Card>
+              <div>
+                <div className="delete-icon" onClick={(e: any) => { delhighlight(e, highlight) }}>
+                  <DeleteOutlined />
                 </div>
-              ) : null}
-            </div>
-            <div className="highlight__location">
-              Page {highlight.position.pageNumber}
-            </div>
+                <strong>{index + 1}. {highlight.comment.text}</strong>
+                {highlight.content.text ? (
+                  <blockquote style={{ marginTop: "0.5rem" }}>
+                    {`${highlight.content.text.slice(0, 90).trim()}…`}
+                  </blockquote>
+                ) : null}
+                {highlight.content.image ? (
+                  <div
+                    className="highlight__image"
+                    style={{ marginTop: "0.5rem" }}
+                  >
+                    <img src={highlight.content.image} alt={"Screenshot"} />
+                  </div>
+                ) : null}
+              </div>
+              <div className="highlight__location">
+                <span>批注者：xxx</span>
+                <span>页码：{highlight.position.pageNumber}</span>
+              </div>
+            </Card>
           </li>
         ))}
       </ul>

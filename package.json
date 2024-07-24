@@ -4,8 +4,17 @@
   "description": "Set of React components for PDF annotation",
   "author": "Artem Tyurin <artem.tyurin@gmail.com>",
   "license": "MIT",
-  "keywords": ["pdf", "highlight", "annotator", "react-component"],
-  "files": ["dist", "README.md", "LICENSE"],
+  "keywords": [
+    "pdf",
+    "highlight",
+    "annotator",
+    "react-component"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
@@ -27,6 +36,8 @@
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
+    "ant-design": "^1.0.0",
+    "antd": "^5.19.3",
     "debounce": "^2.1.0",
     "pdfjs-dist": "^4.4.168",
     "react-rnd": "^10.4.11"

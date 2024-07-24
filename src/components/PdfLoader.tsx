@@ -19,12 +19,15 @@ interface Props {
 interface State {
   pdfDocument: PDFDocumentProxy | null;
   error: Error | null;
+  comments: any | null
 }
 
 export class PdfLoader extends Component<Props, State> {
   state: State = {
     pdfDocument: null,
     error: null,
+
+    comments: null
   };
 
   static defaultProps = {
@@ -32,6 +35,51 @@ export class PdfLoader extends Component<Props, State> {
   };
 
   documentRef = React.createRef<HTMLElement>();
+
+  async getAllCommentsFromPDF(pdf: any) {
+    // // 加载 PDF 文档
+    // const pdf = await getDocument(pdfUrl).promise;
+    console.log(pdf, '******')
+    // 批注数组
+    const comments: any[] = [];
+
+    // 遍历 PDF 中的所有页面
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+
+      if (!page.getAnnotations()) continue; // 如果页面没有批注，跳过
+      // 获取页面上的批注
+      // const pageComments = page.getAnnotations().filter((annotation: any) => annotation.subtype === 'Comment');
+      page.getAnnotations().then((annotations: any) => {
+        // console.log(annotations)
+        annotations.forEach(function (annotationItem: any) {
+
+          // console.log(annotationItem.type, annotationItem.rect, annotationItem, '89898989++++++');
+          if (annotationItem.subtype === "Highlight") {
+            comments.push(annotationItem)
+
+          }
+
+          // 在这里处理批注数据，例如渲染到页面
+          // page.removeAnnotation(annotationItem);
+        });
+
+      })
+      // 将批注添加到结果数组中
+      // comments.push(...pageComments);
+    }
+    console.log(comments)
+    // this.setState({ pdfDocument });
+    this.setState({
+      comments,
+      pdfDocument: pdf
+    })
+    console.log(comments, '++++++++')
+
+    // 返回所有批注
+    return comments;
+
+  }
 
   componentDidMount() {
     this.load();
@@ -82,10 +130,12 @@ export class PdfLoader extends Component<Props, State> {
           ownerDocument,
           cMapUrl,
           cMapPacked,
+          annotationMode: 0
         };
 
         return getDocument(document).promise.then((pdfDocument) => {
           this.setState({ pdfDocument });
+          this.getAllCommentsFromPDF(pdfDocument)
         });
       })
       .catch((e) => this.componentDidCatch(e));

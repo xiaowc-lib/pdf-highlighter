@@ -109,7 +109,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
   highlightRoots: {
     [page: number]: { reactRoot: Root; container: Element };
   } = {};
-  unsubscribe = () => {};
+  unsubscribe = () => { };
 
   constructor(props: Props<T_HT>) {
     super(props);
@@ -184,13 +184,15 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
         textLayerMode: 2,
         removePageBorders: true,
         linkService: linkService,
-      });
+        // annotationMode: 0
+      })
 
     linkService.setDocument(pdfDocument);
     linkService.setViewer(this.viewer);
-    this.viewer.setDocument(pdfDocument);
+    this.viewer.setDocument(pdfDocument)
 
     this.attachRef(eventBus);
+
   }
 
   componentWillUnmount() {
@@ -199,6 +201,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
   findOrCreateHighlightLayer(page: number) {
     const { textLayer } = this.viewer.getPageView(page - 1) || {};
+    // console.log(textLayer, '666666+++++')
 
     if (!textLayer) {
       return null;
@@ -391,7 +394,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
         ...pageViewport.convertToPdfPoint(
           0,
           scaledToViewport(boundingRect, pageViewport, usePdfCoordinates).top -
-            scrollMargin,
+          scrollMargin,
         ),
         0,
       ],
