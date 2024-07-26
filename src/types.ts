@@ -76,3 +76,4 @@ export interface Page {
   node: HTMLElement;
   number: number;
 }
+

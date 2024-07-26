@@ -112,3 +112,7 @@ blockquote:after {
   max-height: 100px;
   overflow-y: auto;
 }
+
+.pdf-render-box {
+  min-width: 640px !important;
+}

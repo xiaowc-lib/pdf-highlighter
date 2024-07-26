@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 
+
+
 interface Props {
   /** See `GlobalWorkerOptionsType`. */
   workerSrc: string;
@@ -31,7 +33,8 @@ export class PdfLoader extends Component<Props, State> {
   };
 
   static defaultProps = {
-    workerSrc: "https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs",
+    // workerSrc: "https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs",
+    workerSrc: `${import.meta.env.BASE_URL}pdf.worker.min.mjs`,
   };
 
   documentRef = React.createRef<HTMLElement>();
@@ -68,7 +71,7 @@ export class PdfLoader extends Component<Props, State> {
       // 将批注添加到结果数组中
       // comments.push(...pageComments);
     }
-    console.log(comments)
+    console.log(comments, 'pdf 文档已有批注')
     // this.setState({ pdfDocument });
     this.setState({
       comments,
@@ -116,6 +119,8 @@ export class PdfLoader extends Component<Props, State> {
 
     if (typeof workerSrc === "string") {
       GlobalWorkerOptions.workerSrc = workerSrc;
+      // GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.min.mjs");
+
     }
 
     Promise.resolve()

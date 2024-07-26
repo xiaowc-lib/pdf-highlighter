@@ -55,7 +55,7 @@ interface State<T_HT> {
 
 interface Props<T_HT> {
   highlightTransform: (
-    highlight: T_ViewportHighlight<T_HT>,
+    highlight: T_ViewportHighlight<T_HT> | any,
     index: number,
     setTip: (
       highlight: T_ViewportHighlight<T_HT>,
@@ -69,6 +69,7 @@ interface Props<T_HT> {
   highlights: Array<T_HT>;
   onScrollChange: () => void;
   scrollRef: (scrollTo: (highlight: T_HT) => void) => void;
+
   pdfDocument: PDFDocumentProxy;
   pdfScaleValue: string;
   onSelectionFinished: (
@@ -284,6 +285,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     usePdfCoordinates,
   }: ScaledPosition): Position {
     const viewport = this.viewer.getPageView(pageNumber - 1).viewport;
+    // console.log(viewport, '-------')
 
     return {
       boundingRect: scaledToViewport(boundingRect, viewport, usePdfCoordinates),
@@ -413,12 +415,14 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     }, 100);
   };
 
+
+
   onDocumentReady = () => {
     const { scrollRef } = this.props;
 
     this.handleScaleValue();
 
-    scrollRef(this.scrollTo);
+    scrollRef?.(this.scrollTo);
   };
 
   onSelectionChange = () => {
@@ -431,6 +435,8 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     if (!selection) {
       return;
     }
+
+    console.log(selection)
 
     const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
@@ -446,6 +452,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     ) {
       return;
     }
+    // console.log(range, 'zzzzzzzz')
 
     this.setState({
       isCollapsed: false,
@@ -516,6 +523,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
       rects,
       pageNumber: pages[0].number,
     };
+    console.log(range, range.toString())
 
     const content = {
       text: range.toString(),

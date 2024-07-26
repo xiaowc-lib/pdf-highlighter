@@ -69,6 +69,7 @@ export const scaledToViewport = (
   const x2 = (width * scaled.x2) / scaled.width;
   const y2 = (height * scaled.y2) / scaled.height;
 
+
   return {
     left: x1,
     top: y1,
