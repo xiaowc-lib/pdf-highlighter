@@ -1,2 +1,2 @@
-// export * from "../../src";
-export * from "../../dist/index.js";
+export * from "../../src";
+// export * from "../../dist/index.js";

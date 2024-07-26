@@ -1,4 +1,5 @@
-.PdfHighlighter {
+.PdfHighlighter,
+.PdfHighlighterRead {
   position: absolute;
   overflow: auto;
   width: 100%;
@@ -6,6 +7,12 @@
 }
 
 .PdfHighlighter__highlight-layer {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+}
+
+.PdfHighlighterRead__highlight-layer {
   position: absolute;
   z-index: 3;
   left: 0;

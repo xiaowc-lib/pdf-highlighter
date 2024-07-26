@@ -4,9 +4,11 @@ import {
   AreaHighlight,
   Highlight,
   PdfHighlighter,
+  PdfHighlighterRead,
   PdfLoader,
   Popup,
   Tip,
+  CommonPdf,
 } from "./react-pdf-highlighter";
 
 
@@ -52,8 +54,8 @@ const HighlightPopup = ({
     </div>
   ) : null;
 
-// const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
-const PRIMARY_PDF_URL = `${import.meta.env.BASE_URL}test.pdf`;
+const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
+// const PRIMARY_PDF_URL = `${import.meta.env.BASE_URL}test.pdf`;
 const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480";
 
 const searchParams = new URLSearchParams(document.location.search);
@@ -252,12 +254,12 @@ const testLights = [
 class App extends Component<{}, State> {
   state = {
     url: initialUrl,
-    // highlights: testHighlights[initialUrl]
-    //   ? [...testHighlights[initialUrl]]
-    //   : [],
-    highlights: testLights
-      ? testLights
+    highlights: testHighlights[initialUrl]
+      ? [...testHighlights[initialUrl]]
       : [],
+    // highlights: testLights
+    //   ? testLights
+    //   : [],
   };
 
 
@@ -279,13 +281,24 @@ class App extends Component<{}, State> {
   };
 
   scrollViewerTo = (highlight: IHighlight) => { };
-
+  scrollViewerToSub = (highlight: IHighlight) => { };
 
   scrollToHighlightFromHash = () => {
     const highlight = this.getHighlightById(parseIdFromHash());
 
+
     if (highlight) {
       this.scrollViewerTo(highlight);
+    }
+    this.scrollToHighlightFromHashSub()
+  };
+
+  scrollToHighlightFromHashSub = () => {
+    const highlight = this.getHighlightById(parseIdFromHash());
+
+    console.log(highlight, 'sub')
+    if (highlight) {
+      this.scrollViewerToSub(highlight);
     }
   };
 
@@ -434,7 +447,7 @@ class App extends Component<{}, State> {
             )}
           </PdfLoader>
         </div>
-        {/* <div
+        <div
           style={{
             height: "100vh",
             width: "75vw",
@@ -442,17 +455,24 @@ class App extends Component<{}, State> {
           }}
         // className="pdf-render-box"
         >
+          {/* <PdfLoader url={url} beforeLoad={<Spinner />}>
+            {(pdfDocument) => (
+              <CommonPdf pdfDocument={pdfDocument} />
+            )}
+          </PdfLoader> */}
           <PdfLoader url={url} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
-              <PdfHighlighter
+              <PdfHighlighterRead
+                hideAnnotation={0}
                 pdfDocument={pdfDocument}
                 enableAreaSelection={(event) => event.altKey}
                 onScrollChange={resetHash}
                 // pdfScaleValue="page-width"
                 scrollRef={(scrollTo: any) => {
-                  this.scrollViewerTo = scrollTo;
+                  console.log(scrollTo, '88888888')
+                  this.scrollViewerToSub = scrollTo;
 
-                  this.scrollToHighlightFromHash();
+                  this.scrollToHighlightFromHashSub();
                 }}
                 onSelectionFinished={(
                   position,
@@ -513,11 +533,11 @@ class App extends Component<{}, State> {
                     </Popup>
                   );
                 }}
-                highlights={highlights}
+                highlights={[]}
               />
             )}
           </PdfLoader>
-        </div> */}
+        </div>
       </div>
     );
   }

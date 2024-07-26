@@ -84,8 +84,19 @@ export class PdfLoader extends Component<Props, State> {
 
   }
 
+  pdfScroll(pdf: any) {
+    // pdf.document
+    //   .getElementById("pdfViewer") // 监听pdf滚动事件
+    //   .addEventListener("scroll", (e: any) => {
+    //     console.log(pdf.PDFViewerApplication.page)
+    //   })
+    console.log('454545456666666')
+  }
+
+
   componentDidMount() {
     this.load();
+    this.pdfScroll(this.state.pdfDocument)
   }
 
   componentWillUnmount() {
@@ -140,7 +151,9 @@ export class PdfLoader extends Component<Props, State> {
 
         return getDocument(document).promise.then((pdfDocument) => {
           this.setState({ pdfDocument });
+
           this.getAllCommentsFromPDF(pdfDocument)
+          // this.pdfScroll(pdfDocument)
         });
       })
       .catch((e) => this.componentDidCatch(e));

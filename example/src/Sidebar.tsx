@@ -82,7 +82,7 @@ export function Sidebar({
                 ) : null}
               </div>
               <div className="highlight__location">
-                <span>批注者：xxx</span>
+                <span>批注者：xxx666</span>
                 <span>页码：{highlight.position.pageNumber}</span>
               </div>
             </Card>

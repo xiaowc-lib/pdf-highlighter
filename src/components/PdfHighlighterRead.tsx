@@ -84,7 +84,7 @@ interface Props<T_HT> {
 
 const EMPTY_ID = "empty-id";
 
-export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
+export class PdfHighlighterRead<T_HT extends IHighlight> extends PureComponent<
   Props<T_HT>,
   State<T_HT>
 > {
@@ -213,7 +213,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
     return findOrCreateContainerLayer(
       textLayer.div,
-      "PdfHighlighter__highlight-layer",
+      "PdfHighlighterRead__highlight-layer",
     );
   }
 
@@ -384,6 +384,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
   scrollTo = (highlight: T_HT) => {
     const { pageNumber, boundingRect, usePdfCoordinates } = highlight.position;
+    console.log(pageNumber, '78787878')
 
     this.viewer.container.removeEventListener("scroll", this.onScroll);
 
@@ -393,16 +394,16 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
     this.viewer.scrollPageIntoView({
       pageNumber,
-      destArray: [
-        null,
-        { name: "XYZ" },
-        ...pageViewport.convertToPdfPoint(
-          0,
-          scaledToViewport(boundingRect, pageViewport, usePdfCoordinates).top -
-          scrollMargin,
-        ),
-        0,
-      ],
+      // destArray: [
+      //   null,
+      //   { name: "XYZ" },
+      //   ...pageViewport.convertToPdfPoint(
+      //     0,
+      //     scaledToViewport(boundingRect, pageViewport, usePdfCoordinates).top -
+      //     scrollMargin,
+      //   ),
+      //   0,
+      // ],
     });
 
     this.setState(
@@ -577,7 +578,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
       <div onPointerDown={this.onMouseDown}>
         <div
           ref={this.containerNodeRef}
-          className="PdfHighlighter"
+          className="PdfHighlighterRead"
           onContextMenu={(e) => e.preventDefault()}
         >
           <div className="pdfViewer" />
