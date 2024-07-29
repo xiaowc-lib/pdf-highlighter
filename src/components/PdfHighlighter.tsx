@@ -118,6 +118,8 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
   constructor(props: Props<T_HT>) {
     super(props);
+    this.debouncedScaleValue = this.debouncedScaleValue.bind(this)
+    this.afterSelection = this.afterSelection.bind(this)
     if (typeof ResizeObserver !== "undefined") {
       this.resizeObserver = new ResizeObserver(this.debouncedScaleValue);
     }
@@ -554,7 +556,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     );
   };
 
-  debouncedAfterSelection: () => void = debounce(this.afterSelection.bind(this), 500);
+  debouncedAfterSelection: () => void = debounce(this.afterSelection, 300);
 
   toggleTextSelection(flag: boolean) {
     if (!this.viewer.viewer) {
@@ -572,7 +574,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     }
   };
 
-  debouncedScaleValue: () => void = debounce(this.handleScaleValue.bind(this), 500);
+  debouncedScaleValue: () => void = debounce(this.handleScaleValue, 500);
 
   render() {
     const { onSelectionFinished, enableAreaSelection } = this.props;
