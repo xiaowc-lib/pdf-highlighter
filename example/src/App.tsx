@@ -280,10 +280,20 @@ class App extends Component<{}, State> {
 
 
 
-  resetHighlights = () => {
-    this.setState({
-      highlights: [],
-    });
+  resetHighlights = (flag: string) => {
+    // this.setState({
+    //   highlights: [],
+    // });
+    if (flag === 'left') {
+      this.setState({
+        leftHighlights: []
+      })
+    } else {
+      this.setState({
+        rightHighlights: []
+      })
+    }
+
   };
 
   toggleDocument = () => {
@@ -441,7 +451,7 @@ class App extends Component<{}, State> {
       <div className="App" style={{ display: "flex", height: "100vh" }}>
         <Sidebar
           highlights={leftHighlights}
-          resetHighlights={this.resetHighlights}
+          resetHighlights={() => { this.resetHighlights('left') }}
           toggleDocument={this.toggleDocument}
           clickCb={() => {
             this.setCurFlagFn('left')
@@ -529,6 +539,7 @@ class App extends Component<{}, State> {
                   );
                 }}
                 highlights={leftHighlights}
+                curFlag='left'
               />
             )}
           </PdfLoader>
@@ -541,11 +552,7 @@ class App extends Component<{}, State> {
           }}
         // className="pdf-render-box"
         >
-          {/* <PdfLoader url={url} beforeLoad={<Spinner />}>
-            {(pdfDocument) => (
-              <CommonPdf pdfDocument={pdfDocument} />
-            )}
-          </PdfLoader> */}
+
           <PdfLoader url={SECONDARY_PDF_URL} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
@@ -555,7 +562,7 @@ class App extends Component<{}, State> {
                 onScrollChange={resetHash}
                 // pdfScaleValue="page-width"
                 scrollRef={(scrollTo: any) => {
-                  console.log(scrollTo, '88888888')
+                  // console.log(scrollTo, '88888888')
                   this.scrollViewerToSub = scrollTo;
 
                   this.scrollToHighlightFromHashSub();
@@ -624,13 +631,14 @@ class App extends Component<{}, State> {
                   );
                 }}
                 highlights={rightHighlights}
+                curFlag='right'
               />
             )}
           </PdfLoader>
         </div>
         <Sidebar
           highlights={rightHighlights}
-          resetHighlights={this.resetHighlights}
+          resetHighlights={() => { this.resetHighlights('right') }}
           toggleDocument={this.toggleDocument}
           clickCb={() => {
             this.setCurFlagFn('right')

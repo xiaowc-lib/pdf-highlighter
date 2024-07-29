@@ -93,9 +93,9 @@ export function Sidebar({
         ))}
       </ul>
       <div style={{ padding: "1rem" }}>
-        <button type="button" onClick={toggleDocument}>
+        {/* <button type="button" onClick={toggleDocument}>
           Toggle PDF document
-        </button>
+        </button> */}
       </div>
       {highlights.length > 0 ? (
         <div style={{ padding: "1rem" }}>

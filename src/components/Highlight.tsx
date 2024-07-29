@@ -34,7 +34,7 @@ export class Highlight extends Component<Props> {
     } = this.props;
 
     const { rects, boundingRect } = position;
-    console.log(position, '---666666---')
+    // console.log(position, '---666666---')
     return (
       <div
         className={`Highlight ${isScrolledTo ? "Highlight--scrolledTo" : ""}`}

@@ -79,7 +79,8 @@ interface Props<T_HT> {
     transformSelection: () => void,
   ) => JSX.Element | null;
   enableAreaSelection: (event: MouseEvent) => boolean;
-  hideAnnotation?: 0 | 1
+  hideAnnotation?: 0 | 1;
+  curFlag: string
 }
 
 const EMPTY_ID = "empty-id";
@@ -90,7 +91,8 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 > {
   static defaultProps = {
     pdfScaleValue: "auto",
-    hideAnnotation: 1
+    hideAnnotation: 1,
+    curFlag: 'left'
   };
 
   state: State<T_HT> = {
@@ -204,8 +206,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
   }
 
   findOrCreateHighlightLayer(page: number) {
-    const { textLayer } = this.viewer.getPageView(page - 1) || {};
-    // console.log(textLayer, '666666333333')
+    const { textLayer } = this.viewer.getPageView(page - 1);
 
     if (!textLayer) {
       return null;
@@ -213,7 +214,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
     return findOrCreateContainerLayer(
       textLayer.div,
-      "PdfHighlighter__highlight-layer",
+      `PdfHighlighter__highlight-layer${this.props.curFlag}`,
     );
   }
 
@@ -530,7 +531,6 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
       rects,
       pageNumber: pages[0].number,
     };
-    console.log(range, range.toString())
 
     const content = {
       text: range.toString(),
@@ -554,7 +554,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     );
   };
 
-  debouncedAfterSelection: () => void = debounce(this.afterSelection, 500);
+  debouncedAfterSelection: () => void = debounce(this.afterSelection.bind(this), 500);
 
   toggleTextSelection(flag: boolean) {
     if (!this.viewer.viewer) {
@@ -572,7 +572,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     }
   };
 
-  debouncedScaleValue: () => void = debounce(this.handleScaleValue, 500);
+  debouncedScaleValue: () => void = debounce(this.handleScaleValue.bind(this), 500);
 
   render() {
     const { onSelectionFinished, enableAreaSelection } = this.props;
@@ -663,6 +663,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
     for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
       const highlightRoot = this.highlightRoots[pageNumber];
       /** Need to check if container is still attached to the DOM as PDF.js can unload pages. */
+
       if (highlightRoot?.container.isConnected) {
         // highlights.length ? this.renderHighlightLayer(highlightRoot.reactRoot, pageNumber) : null;
         this.renderHighlightLayer(highlightRoot.reactRoot, pageNumber)
@@ -682,6 +683,8 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
         // }
 
       }
+
+
     }
   }
 
