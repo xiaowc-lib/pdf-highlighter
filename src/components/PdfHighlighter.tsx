@@ -187,7 +187,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
         textLayerMode: 2,
         removePageBorders: true,
         linkService: linkService,
-        annotationMode: this.props.hideAnnotation
+        // annotationMode: this.props.hideAnnotation
       })
 
     linkService.setDocument(pdfDocument);
@@ -383,7 +383,8 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
   };
 
   scrollTo = (highlight: T_HT) => {
-    const { pageNumber, boundingRect, usePdfCoordinates } = highlight.position;
+    const { pageNumber, boundingRect, usePdfCoordinates, } = highlight.position;
+    const { pdfDocument } = this.props
 
     this.viewer.container.removeEventListener("scroll", this.onScroll);
 
@@ -391,8 +392,11 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
 
     const scrollMargin = 10;
 
+    // 翻译模块 如果需要跳转的页码超出翻译的pdf总页码数，需要跳转到翻译的最后一页（也就是引文的最后一页）
+    const pageNum = pdfDocument.numPages < pageNumber ? pdfDocument.numPages : pageNumber
+
     this.viewer.scrollPageIntoView({
-      pageNumber,
+      pageNumber: pageNum,
       destArray: [
         null,
         { name: "XYZ" },
@@ -439,7 +443,7 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
       return;
     }
 
-    console.log(selection)
+    // console.log(selection)
 
     const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
@@ -655,13 +659,15 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
   }
 
   private renderHighlightLayers() {
-    const { pdfDocument } = this.props;
+    const { pdfDocument, highlights } = this.props;
     for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
       const highlightRoot = this.highlightRoots[pageNumber];
       /** Need to check if container is still attached to the DOM as PDF.js can unload pages. */
       if (highlightRoot?.container.isConnected) {
-        this.renderHighlightLayer(highlightRoot.reactRoot, pageNumber);
+        // highlights.length ? this.renderHighlightLayer(highlightRoot.reactRoot, pageNumber) : null;
+        this.renderHighlightLayer(highlightRoot.reactRoot, pageNumber)
       } else {
+        // if (highlights.length) {
         const highlightLayer = this.findOrCreateHighlightLayer(pageNumber);
         if (highlightLayer) {
           const reactRoot = createRoot(highlightLayer);
@@ -669,8 +675,12 @@ export class PdfHighlighter<T_HT extends IHighlight> extends PureComponent<
             reactRoot,
             container: highlightLayer,
           };
-          this.renderHighlightLayer(reactRoot, pageNumber);
+          // 没有高亮时，不需要渲染高亮层
+          // highlights.length ? this.renderHighlightLayer(reactRoot, pageNumber) : null;
+          this.renderHighlightLayer(reactRoot, pageNumber)
         }
+        // }
+
       }
     }
   }

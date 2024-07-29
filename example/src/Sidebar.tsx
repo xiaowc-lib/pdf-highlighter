@@ -9,6 +9,7 @@ interface Props {
   highlights: Array<IHighlight>;
   resetHighlights: () => void;
   toggleDocument: () => void;
+  clickCb?: () => void;
 }
 
 const updateHash = (highlight: IHighlight) => {
@@ -21,6 +22,7 @@ export function Sidebar({
   highlights,
   toggleDocument,
   resetHighlights,
+  clickCb,
 }: Props) {
   const delhighlight = (event: any, highlight: any) => {
     console.log(highlight, '444444')
@@ -58,6 +60,7 @@ export function Sidebar({
             key={index}
             className="sidebar__highlight"
             onClick={() => {
+              clickCb?.()
               updateHash(highlight);
             }}
           >

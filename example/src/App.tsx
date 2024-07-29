@@ -32,6 +32,10 @@ const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 interface State {
   url: string;
   highlights: Array<IHighlight> | any;
+  leftHighlights: Array<IHighlight> | any;
+  rightHighlights: Array<IHighlight> | any;
+  curHighlight: any;
+  curFlag: string
 }
 
 const getNextId = () => String(Math.random()).slice(2);
@@ -260,7 +264,18 @@ class App extends Component<{}, State> {
     // highlights: testLights
     //   ? testLights
     //   : [],
+    leftHighlights: testHighlights[PRIMARY_PDF_URL],
+    rightHighlights: testHighlights[SECONDARY_PDF_URL],
+    curHighlight: null,
+    curFlag: '',
+
   };
+
+  setCurFlagFn = (curFlag: string) => {
+    this.setState({
+      curFlag
+    })
+  }
 
 
 
@@ -284,57 +299,111 @@ class App extends Component<{}, State> {
   scrollViewerToSub = (highlight: IHighlight) => { };
 
   scrollToHighlightFromHash = () => {
-    const highlight = this.getHighlightById(parseIdFromHash());
-
+    const { leftHighlights } = this.state
+    const highlight = this.getHighlightById(parseIdFromHash(), leftHighlights);
+    console.log(highlight, '99999')
+    this.setState({
+      curHighlight: highlight
+    })
 
     if (highlight) {
       this.scrollViewerTo(highlight);
+      this.scrollViewerToSub(highlight);
     }
-    this.scrollToHighlightFromHashSub()
+
   };
 
   scrollToHighlightFromHashSub = () => {
-    const highlight = this.getHighlightById(parseIdFromHash());
-
+    const { rightHighlights } = this.state
+    const highlight = this.getHighlightById(parseIdFromHash(), rightHighlights);
+    this.setState({
+      curHighlight: highlight
+    })
     console.log(highlight, 'sub')
     if (highlight) {
       this.scrollViewerToSub(highlight);
+      this.scrollViewerTo(highlight);
     }
+
   };
 
+  // bindHashChangeFn = (flag: string) => {
+  //   const { curFlag } = this.state
+  //   window.removeEventListener('hashchange',)
+
+  //   window.addEventListener(
+  //     "hashchange",
+  //     curFlag === 'left' ? this.scrollToHighlightFromHash : this.scrollToHighlightFromHashSub,
+  //     false,
+  //   );
+  // }
+
   componentDidMount() {
+    const { curFlag } = this.state
     window.addEventListener(
       "hashchange",
-      this.scrollToHighlightFromHash,
+      curFlag === 'left' ? this.scrollToHighlightFromHash : this.scrollToHighlightFromHashSub,
       false,
     );
   }
 
-  getHighlightById(id: string) {
-    const { highlights } = this.state;
-
-    return highlights.find((highlight) => highlight.id === id);
+  // 左右批注切换需要重新绑定左右滚动逻辑
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<State>, snapshot?: any): void {
+    const { curFlag } = this.state
+    if (curFlag !== prevState.curFlag) {
+      window.removeEventListener(
+        "hashchange",
+        prevState.curFlag === 'left' ? this.scrollToHighlightFromHash : this.scrollToHighlightFromHashSub,
+        false,
+      );
+      window.addEventListener(
+        "hashchange",
+        curFlag === 'left' ? this.scrollToHighlightFromHash : this.scrollToHighlightFromHashSub,
+        false,
+      );
+    }
   }
 
-  addHighlight(highlight: NewHighlight) {
-    const { highlights } = this.state;
+  getHighlightById(id: string, highlights: any[]) {
+    // const { highlights,leftHighlights,rightHighlights } = this.state;
+
+    return highlights.find((highlight) => highlight.id === id);
+
+  }
+
+  // 为英文pdf添加或者中文pdf添加批注
+  addHighlight(highlight: NewHighlight, type: string = 'left') {
+    const { highlights, leftHighlights, rightHighlights } = this.state;
 
     console.log("Saving highlight", highlight);
-    console.log([{ ...highlight, id: getNextId() }, ...highlights], 'uouououou')
-    this.setState({
-      highlights: [{ ...highlight, id: getNextId() }, ...highlights],
-    });
+    console.log([{ ...highlight, id: getNextId() }, ...(type === 'left' ? leftHighlights : rightHighlights)], 'uouououou')
+    if (type === 'left') {
+      this.setState({
+        leftHighlights: [{ ...highlight, id: getNextId() }, ...leftHighlights],
+
+      });
+    } else {
+      this.setState({
+        rightHighlights: [{ ...highlight, id: getNextId() }, ...rightHighlights],
+
+      });
+    }
+    // this.setState({
+    //   highlights: [{ ...highlight, id: getNextId() }, ...highlights],
+    // });
   }
 
   updateHighlight(
     highlightId: string,
     position: Partial<ScaledPosition>,
     content: Partial<Content>,
+    highlights: Array<IHighlight> | any,
+    curFlag: string
   ) {
     console.log("Updating highlight", highlightId, position, content);
-
-    this.setState({
-      highlights: this.state.highlights.map((h) => {
+    // curFlag === 'left' ? 'leftHighlights' : 'rightHighlights'
+    const updateFn = () => {
+      return highlights.map((h: any) => {
         const {
           id,
           position: originalPosition,
@@ -349,19 +418,33 @@ class App extends Component<{}, State> {
             ...rest,
           }
           : h;
-      }),
-    });
+      });
+    };
+    if (curFlag === 'left') {
+      this.setState({
+        leftHighlights: updateFn()
+      });
+    } else {
+      this.setState({
+        rightHighlights: updateFn()
+      });
+    }
+
   }
 
   render() {
-    const { url, highlights } = this.state;
+    // const { url, highlights } = this.state;
+    const { leftHighlights, rightHighlights } = this.state;
 
     return (
       <div className="App" style={{ display: "flex", height: "100vh" }}>
         <Sidebar
-          highlights={highlights}
+          highlights={leftHighlights}
           resetHighlights={this.resetHighlights}
           toggleDocument={this.toggleDocument}
+          clickCb={() => {
+            this.setCurFlagFn('left')
+          }}
         />
         <div
           style={{
@@ -371,7 +454,7 @@ class App extends Component<{}, State> {
           }}
         // className="pdf-render-box"
         >
-          <PdfLoader url={url} beforeLoad={<Spinner />}>
+          <PdfLoader url={PRIMARY_PDF_URL} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
               <PdfHighlighter
                 pdfDocument={pdfDocument}
@@ -424,6 +507,8 @@ class App extends Component<{}, State> {
                           highlight.id,
                           { boundingRect: viewportToScaled(boundingRect) },
                           { image: screenshot(boundingRect) },
+                          leftHighlights,
+                          'left'
                         );
                       }}
                     />
@@ -442,7 +527,7 @@ class App extends Component<{}, State> {
                     </Popup>
                   );
                 }}
-                highlights={highlights}
+                highlights={leftHighlights}
               />
             )}
           </PdfLoader>
@@ -460,9 +545,9 @@ class App extends Component<{}, State> {
               <CommonPdf pdfDocument={pdfDocument} />
             )}
           </PdfLoader> */}
-          <PdfLoader url={url} beforeLoad={<Spinner />}>
+          <PdfLoader url={SECONDARY_PDF_URL} beforeLoad={<Spinner />}>
             {(pdfDocument) => (
-              <PdfHighlighterRead
+              <PdfHighlighter
                 hideAnnotation={0}
                 pdfDocument={pdfDocument}
                 enableAreaSelection={(event) => event.altKey}
@@ -483,7 +568,7 @@ class App extends Component<{}, State> {
                   <Tip
                     onOpen={transformSelection}
                     onConfirm={(comment) => {
-                      this.addHighlight({ content, position, comment });
+                      this.addHighlight({ content, position, comment }, 'right');
 
                       hideTipAndSelection();
                     }}
@@ -515,6 +600,8 @@ class App extends Component<{}, State> {
                           highlight.id,
                           { boundingRect: viewportToScaled(boundingRect) },
                           { image: screenshot(boundingRect) },
+                          rightHighlights,
+                          'right'
                         );
                       }}
                     />
@@ -533,11 +620,19 @@ class App extends Component<{}, State> {
                     </Popup>
                   );
                 }}
-                highlights={[]}
+                highlights={rightHighlights}
               />
             )}
           </PdfLoader>
         </div>
+        <Sidebar
+          highlights={rightHighlights}
+          resetHighlights={this.resetHighlights}
+          toggleDocument={this.toggleDocument}
+          clickCb={() => {
+            this.setCurFlagFn('right')
+          }}
+        />
       </div>
     );
   }
