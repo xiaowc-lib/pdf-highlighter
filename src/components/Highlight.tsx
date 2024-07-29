@@ -17,6 +17,7 @@ interface Props {
     text: string;
   };
   isScrolledTo: boolean;
+  highlightColor?: string
 }
 
 export class Highlight extends Component<Props> {
@@ -29,6 +30,7 @@ export class Highlight extends Component<Props> {
       onMouseOut,
       comment,
       isScrolledTo,
+      highlightColor,
     } = this.props;
 
     const { rects, boundingRect } = position;
@@ -48,7 +50,7 @@ export class Highlight extends Component<Props> {
             {comment.emoji}
           </div>
         ) : null}
-        <div className="Highlight__parts">
+        <div className="Highlight__parts" >
           {rects.map((rect, index) => (
             <div
               onMouseOver={onMouseOver}
@@ -56,8 +58,9 @@ export class Highlight extends Component<Props> {
               onClick={onClick}
               // biome-ignore lint/suspicious/noArrayIndexKey: We can use position hash at some point in future
               key={index}
-              style={rect}
+              style={{ ...rect, background: highlightColor }}
               className={"Highlight__part"}
+
             />
           ))}
         </div>

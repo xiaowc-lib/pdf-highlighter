@@ -256,6 +256,7 @@ const testLights = [
 ]
 // biome-ignore lint/complexity/noBannedTypes: Not sure what to use instead of {}
 class App extends Component<{}, State> {
+  highlightColor: string = '#bcd2ee'
   state = {
     url: initialUrl,
     highlights: testHighlights[initialUrl]
@@ -590,6 +591,7 @@ class App extends Component<{}, State> {
                       isScrolledTo={isScrolledTo}
                       position={highlight.position}
                       comment={highlight.comment}
+                      highlightColor={this.highlightColor}
                     />
                   ) : (
                     <AreaHighlight
@@ -604,6 +606,7 @@ class App extends Component<{}, State> {
                           'right'
                         );
                       }}
+                      highlightColor={this.highlightColor}
                     />
                   );
 
